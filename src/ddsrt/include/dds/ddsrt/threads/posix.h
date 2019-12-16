@@ -62,9 +62,12 @@ typedef uintptr_t ddsrt_tid_t;
 #endif
 
 /* Wrapped in a struct to force conformation to abstraction. */
-typedef struct {
-    pthread_t v;
-} ddsrt_thread_t;
+
+typedef pthread_t ddsrt_thread_t;
+
+// typedef struct {
+//     pthread_t v;
+// } ddsrt_thread_t;
 
 #if defined (__cplusplus)
 }

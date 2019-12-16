@@ -57,11 +57,11 @@ void log_stacktrace (const struct ddsrt_log_cfg *logcfg, const char *name, ddsrt
   while (!ddsrt_atomic_cas32 (&log_stacktrace_flag, 0, 1))
     dds_sleepfor (d);
   sigaction (SIGXCPU, &act, &oact);
-  pthread_kill (tid.v, SIGXCPU);
-  while (!ddsrt_atomic_cas32 (&log_stacktrace_flag, 2, 3) && pthread_kill (tid.v, 0) == 0)
+  pthread_kill (tid, SIGXCPU);
+  while (!ddsrt_atomic_cas32 (&log_stacktrace_flag, 2, 3) && pthread_kill (tid, 0) == 0)
     dds_sleepfor (d);
   sigaction (SIGXCPU, &oact, NULL);
-  if (pthread_kill (tid.v, 0) != 0)
+  if (pthread_kill (tid, 0) != 0)
     DDS_CLOG (~DDS_LC_FATAL, logcfg, "-- thread exited --\n");
   else
   {

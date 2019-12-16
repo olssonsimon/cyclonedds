@@ -187,10 +187,10 @@ static void *os_startRoutineWrapper (void *threadContext)
 
   /* Note that any possible errors raised here are not terminal since the
      thread may have exited at this point anyway. */
-  if (pthread_getschedparam(thread.v, &policy, &sched_param) == 0) {
+  if (pthread_getschedparam(thread, &policy, &sched_param) == 0) {
     max = sched_get_priority_max(policy);
     if (max != -1) {
-      (void)pthread_setschedprio(thread.v, max);
+      (void)pthread_setschedprio(thread, max);
     }
   }
 #endif
@@ -306,7 +306,7 @@ ddsrt_thread_create (
   sigfillset (&set);
   sigdelset (&set, SIGXCPU);
   sigprocmask (SIG_BLOCK, &set, &oset);
-  if ((create_ret = pthread_create (&threadptr->v, &attr, os_startRoutineWrapper, ctx)) != 0)
+  if ((create_ret = pthread_create (threadptr, &attr, os_startRoutineWrapper, ctx)) != 0)
   {
     DDS_ERROR ("os_threadCreate(%s): pthread_create failed with error %d\n", name, create_ret);
     goto err_create;
@@ -349,13 +349,13 @@ ddsrt_gettid(void)
 ddsrt_thread_t
 ddsrt_thread_self(void)
 {
-  ddsrt_thread_t id = {.v = pthread_self ()};
+  ddsrt_thread_t id = pthread_self ();
   return id;
 }
 
 bool ddsrt_thread_equal(ddsrt_thread_t a, ddsrt_thread_t b)
 {
-  return (pthread_equal(a.v, b.v) != 0);
+  return (pthread_equal(a, b) != 0);
 }
 
 dds_return_t
@@ -364,12 +364,12 @@ ddsrt_thread_join(ddsrt_thread_t thread, uint32_t *thread_result)
   int err;
   void *vthread_result;
 
-  assert (thread.v);
+  assert (thread);
 
 
-  if ((err = pthread_join (thread.v, &vthread_result)) != 0)
+  if ((err = pthread_join (thread, &vthread_result)) != 0)
   {
-    DDS_ERROR ("pthread_join(0x%"PRIxMAX") failed with error %d\n", (uintmax_t)((uintptr_t)thread.v), err);
+    DDS_ERROR ("pthread_join(0x%"PRIxMAX") failed with error %d\n", (uintmax_t)((uintptr_t)thread), err);
     return DDS_RETCODE_ERROR;
   }
 
